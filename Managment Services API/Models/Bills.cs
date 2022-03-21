@@ -14,5 +14,8 @@ namespace Managment_Services_API.Models
         public DateTime Time { get; set; }
         [Required]
         public Services Service { get; set; }
+        [Required]  
+        public bool Paid { get; set; }
+
     }
 }

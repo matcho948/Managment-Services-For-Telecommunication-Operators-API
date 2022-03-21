@@ -17,8 +17,10 @@ namespace Managment_Services_API.Models
         public string Address { get; set; }
         [Required]
         public string Email { get; set; }
-        public List<Services> Services { get; set; }
-
-
+        public virtual List<Services> Services { get; set; }
+        public Customers()
+        {
+            Services = new List<Services>();
+        }
     }
 }
