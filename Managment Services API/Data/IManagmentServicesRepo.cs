@@ -9,6 +9,9 @@ namespace Managment_Services_API.Data
         public Task AddService(int idCustomer, Services service);
         public Task<IEnumerable<Customers>> GetAllCustomers();
         public Task CreateBills(Services service);
-        
+        public Task<IEnumerable<Bills>> GetBills(int idService);
+        public Task<Bills> GetBill(int id);
+        public bool ChangePaidToTrue(Bills bill);
+
     }
 }

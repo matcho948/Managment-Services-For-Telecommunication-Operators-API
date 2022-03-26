@@ -1,4 +1,5 @@
 ﻿using Managment_Services_API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Managment_Services_API.Data
 {
@@ -19,7 +20,7 @@ namespace Managment_Services_API.Data
 
         public async Task AddService(int idCustomer, Services service)
         {
-            var customer = _context.Customers.FirstOrDefault(p => p.Id == idCustomer);
+            var customer = await _context.Customers.FirstOrDefaultAsync(p => p.Id == idCustomer);
             if (customer == null)
                 throw new ArgumentNullException(nameof(customer));
             customer.Services.Add(service);
@@ -28,18 +29,20 @@ namespace Managment_Services_API.Data
 
         public async Task<Customers> GetCustomer(int idCustomer)
         {
-            var customer = _context.Customers.FirstOrDefault(p => p.Id == idCustomer);
+            var customer = await _context.Customers.FirstOrDefaultAsync(p => p.Id == idCustomer);
             return customer;
         }
         public async Task<IEnumerable<Customers>> GetAllCustomers()
         {
-            var customers = _context.Customers.ToList();
+            var customers = await _context.Customers.ToListAsync();
             return customers;
         }
 
         public async Task CreateBills(Services service)
         {
-            for(int i=0;i<service.Type.Duration;i++)
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
+            for (int i=0;i<service.Type.Duration;i++)
             {
                 var time = DateTime.Now;
                 var newDate = time.AddMonths(i);
@@ -51,6 +54,27 @@ namespace Managment_Services_API.Data
                 _context.Bills.Add(bill);
                 _context.SaveChanges();
             }
+        }
+
+        public async Task<IEnumerable<Bills>> GetBills(int idService)
+        {
+         var bills = await _context.Bills.Where(p=>p.Service.Id == idService).ToListAsync();
+         return bills;
+        }
+
+        public async Task<Bills> GetBill(int id)
+        {
+            var bill = await _context.Bills.FirstOrDefaultAsync(p => p.Id == id);
+            return bill;
+        }
+
+        public bool ChangePaidToTrue(Bills bill)
+        {
+            bill.Paid = true;
+            _context.SaveChanges();
+            if (bill.Paid)
+                return true;
+            return false;
         }
     }
 }
