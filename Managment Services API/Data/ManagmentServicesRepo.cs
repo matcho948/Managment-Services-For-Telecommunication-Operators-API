@@ -29,12 +29,12 @@ namespace Managment_Services_API.Data
 
         public async Task<Customers> GetCustomer(int idCustomer)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(p => p.Id == idCustomer);
+            var customer = await _context.Customers.Include(p=>p.Services).FirstOrDefaultAsync(p => p.Id == idCustomer);
             return customer;
         }
         public async Task<IEnumerable<Customers>> GetAllCustomers()
         {
-            var customers = await _context.Customers.ToListAsync();
+            var customers = await _context.Customers.Include(p => p.Services).ToListAsync();
             return customers;
         }
 
@@ -52,19 +52,19 @@ namespace Managment_Services_API.Data
                 bill.Paid = false;
                 bill.Time = newDate;
                 _context.Bills.Add(bill);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
         public async Task<IEnumerable<Bills>> GetBills(int idService)
         {
-         var bills = await _context.Bills.Where(p=>p.Service.Id == idService).ToListAsync();
+         var bills = await _context.Bills.Include(p=>p.Service).Where(p=>p.Service.Id == idService).ToListAsync();
          return bills;
         }
 
         public async Task<Bills> GetBill(int id)
         {
-            var bill = await _context.Bills.FirstOrDefaultAsync(p => p.Id == id);
+            var bill = await _context.Bills.Include(p => p.Service).FirstOrDefaultAsync(p => p.Id == id);
             return bill;
         }
 
