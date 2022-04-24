@@ -22,7 +22,7 @@ namespace Managment_Services_API.Controllers
         [HttpPost("/AddService")]
         public async Task<ActionResult> AddService(int idCustomer, Services service)
         {
-            var customer = _repo.GetCustomer(idCustomer);
+            var customer = await _repo.GetCustomer(idCustomer);
             if (customer == null)
                 return NotFound();
             await _repo.AddService(idCustomer, service);
