@@ -1,27 +1,35 @@
-﻿using Managment_Services_API.Data;
+﻿using AutoMapper;
+using Managment_Services_API.Data;
+using Managment_Services_API.Dtos;
 using Managment_Services_API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Managment_Services_API.Controllers
 {
-    [Route("/api/Customer")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
         private readonly IManagmentServicesRepo _repo;
-        public CustomerController(IManagmentServicesRepo repo)
+        private readonly IMapper _mapper;
+        public CustomerController(IManagmentServicesRepo repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
         [HttpPost("/AddCustomer")]
-        public async Task<ActionResult> AddCustomer(Customers customers)
+        public async Task<ActionResult> AddCustomer(AddCustomerDto customersDto)
         {
-            await _repo.AddCustomer(customers);
-            return CreatedAtRoute(nameof(GetCustomerById),new { Id = customers.Id},customers);
+            var customer = _mapper.Map<Customers>(customersDto);
+            await _repo.AddCustomer(customer);
+            return CreatedAtRoute(nameof(GetCustomerById),new { Id = customer.Id},customer);
         }
         [HttpPost("/AddService")]
-        public async Task<ActionResult> AddService(int idCustomer, Services service)
+        public async Task<ActionResult> AddService(int idCustomer, AddServiceDto serviceDto)
         {
+            var type = _mapper.Map<TypeOfServices>(serviceDto.Type);
+            ServicesDto serviceDtos = new ServicesDto(type,serviceDto.StartServices,serviceDto.EndServices);
+            var service = _mapper.Map<Services>(serviceDtos);
+            service.Type = type;
             var customer = await _repo.GetCustomer(idCustomer);
             if (customer == null)
                 return NotFound();
