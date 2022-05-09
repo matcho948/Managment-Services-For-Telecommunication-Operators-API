@@ -29,12 +29,18 @@ namespace Managment_Services_API.Data
 
         public async Task<Customers> GetCustomer(int idCustomer)
         {
-            var customer = await _context.Customers.Include(p=>p.Services).FirstOrDefaultAsync(p => p.Id == idCustomer);
+            var customer = await _context.Customers
+            .Include(p=>p.Services)
+            .ThenInclude(p=>p.Type)
+            .FirstOrDefaultAsync(p => p.Id == idCustomer);
             return customer;
         }
         public async Task<IEnumerable<Customers>> GetAllCustomers()
         {
-            var customers = await _context.Customers.Include(p => p.Services).ToListAsync();
+            var customers = await _context.Customers
+            .Include(p => p.Services)
+            .ThenInclude(p => p.Type)
+            .ToListAsync();
             return customers;
         }
 
